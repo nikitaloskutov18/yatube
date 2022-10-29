@@ -26,7 +26,7 @@ class PostCreateFormTests(TestCase):
             text='Текст',
             group=cls.group
         )
-        cls.small_gif = (      
+        cls.small_gif = (     
             b'\x47\x49\x46\x38\x39\x61\x02\x00'
             b'\x01\x00\x80\x00\x00\x00\x00\x00'
             b'\xFF\xFF\xFF\x21\xF9\x04\x00\x00'
@@ -149,4 +149,4 @@ class PostCreateFormTests(TestCase):
         self.assertEqual(Comment.objects.count(), comment_count)
         self.assertRedirects(
             response, '/auth/login/?next=/posts/1/comment/'
-        ) 
+        )
