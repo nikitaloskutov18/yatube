@@ -145,7 +145,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
 
 # Handling 403 errors
-CSRF_FAILURE_VIEW = 'core.views. permission_denied_view'
+CSRF_FAILURE_VIEW = 'core.views.permission_denied_view'
 
 # Media File
 MEDIA_URL = '/media/'
