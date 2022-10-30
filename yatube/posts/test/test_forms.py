@@ -10,6 +10,14 @@ from ..models import Group, Post, User, Comment
 
 TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
 
+SMALL_GIF = (
+            b'\x47\x49\x46\x38\x39\x61\x02\x00'
+            b'\x01\x00\x80\x00\x00\x00\x00\x00'
+            b'\xFF\xFF\xFF\x21\xF9\x04\x00\x00'
+            b'\x00\x00\x00\x2C\x00\x00\x00\x00'
+            b'\x02\x00\x01\x00\x00\x02\x02\x0C'
+            b'\x0A\x00\x3B'
+)
 
 @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
 class PostCreateFormTests(TestCase):
@@ -26,22 +34,14 @@ class PostCreateFormTests(TestCase):
             text='Текст',
             group=cls.group
         )
-        cls.small_gif = (
-            b'\x47\x49\x46\x38\x39\x61\x02\x00'
-            b'\x01\x00\x80\x00\x00\x00\x00\x00'
-            b'\xFF\xFF\xFF\x21\xF9\x04\x00\x00'
-            b'\x00\x00\x00\x2C\x00\x00\x00\x00'
-            b'\x02\x00\x01\x00\x00\x02\x02\x0C'
-            b'\x0A\x00\x3B'
-        )
         cls.image_for_create = SimpleUploadedFile(
             name='small1.gif',
-            content=cls.small_gif,
+            content=SMALL_GIF,
             content_type='image/gif'
         )
         cls.image_for_edit = SimpleUploadedFile(
             name='small2.gif',
-            content=cls.small_gif,
+            content=SMALL_GIF,
             content_type='image/gif'
         )
 

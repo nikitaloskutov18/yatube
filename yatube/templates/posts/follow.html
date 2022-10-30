@@ -1,8 +1,7 @@
 {% extends 'base.html' %}
 {% block title %}Мои подписки на авторов{% endblock %}
-{% block header %}Последние обновление посты{% endblock %}
 {% block content %}
-  {% include 'posts/includes/switcher.html' %}
+  {% include 'posts/includes/switcher.html' with follow=True %}
       <div class="mb-5">
         {% for post in page_obj %}
           {% include "includes/article.html" with all_user_post_link=True detail_info_link=True group_list_link=True %}

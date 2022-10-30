@@ -2,7 +2,6 @@ from django.shortcuts import render, get_object_or_404
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import cache_page
-# from django.core.paginator import Paginator
 
 from .forms import PostForm, CommentForm
 
@@ -36,11 +35,24 @@ def group_posts(request, slug):
 
 def profile(request, username):
     author = get_object_or_404(User, username=username)
+    user = request.user
     posts = Post.objects.filter(author=author)
     page_obj = paginator(posts, request)
+    if user.is_authenticated:
+        followers = author.follower.count()
+    else:
+        followers = 'N/A'
+    followings = author.following.count()
+    following = False
+    if user.is_authenticated:
+        if Follow.objects.filter(user=user, author=author).exists():
+            following = True
     context = {
         'author': author,
-        'page_obj': page_obj
+        'page_obj': page_obj,
+        'followers': followers,
+        'followings': followings,
+        'following': following
     }
     return render(request, 'posts/profile.html', context)
 
