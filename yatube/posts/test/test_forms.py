@@ -1,3 +1,4 @@
+from distutils.command.upload import upload
 import shutil
 import tempfile
 
@@ -10,7 +11,7 @@ from ..models import Group, Post, User, Comment
 
 TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
 
-SMALL_GIF = (
+small_gif = (
     b'\x47\x49\x46\x38\x39\x61\x02\x00'
     b'\x01\x00\x80\x00\x00\x00\x00\x00'
     b'\xFF\xFF\xFF\x21\xF9\x04\x00\x00'
@@ -35,16 +36,11 @@ class PostCreateFormTests(TestCase):
             text='Текст',
             group=cls.group
         )
-        cls.image_for_create = SimpleUploadedFile(
-            name='small1.gif',
-            content=SMALL_GIF,
-            content_type='image/gif'
-        )
-        cls.image_for_edit = SimpleUploadedFile(
-            name='small2.gif',
-            content=SMALL_GIF,
-            content_type='image/gif'
-        )
+        # cls.image_for_create = SimpleUploadedFile(
+        #     name='small1.gif',
+        #     content=SMALL_GIF,
+        #     content_type='image/gif'
+        # )
 
     @classmethod
     def tearDownClass(cls):
@@ -59,10 +55,15 @@ class PostCreateFormTests(TestCase):
     def test_post_create_form(self):
         """Тест на проверку создания записи в базе данных"""
         post_count = Post.objects.count()
+        uploaded = SimpleUploadedFile(
+            name='small.gif',
+            content=small_gif,
+            content_type='image/gif'
+        )
         form_data = {
             'group': self.group.id,
             'text': 'Тест прошёл успешно',
-            'image': self.image_for_create,
+            'image': uploaded,
         }
         response = self.authorized_client.post(
             reverse('posts:post_create'),
@@ -74,7 +75,7 @@ class PostCreateFormTests(TestCase):
         self.assertEqual(created_post.group.id, form_data['group'])
         self.assertEqual(created_post.author, self.user)
         self.assertEqual(created_post.text, form_data['text'])
-        self.assertEqual(created_post.image, 'posts/small1.gif')
+        self.assertEqual(created_post.image, 'posts/small.gif')
         self.assertRedirects(
             response,
             reverse('posts:profile', kwargs={'username': self.user})
@@ -100,7 +101,6 @@ class PostCreateFormTests(TestCase):
         form_data = {
             'text': 'Редактированный текст',
             'group': self.group.id,
-            'image': self.image_for_edit
         }
         response = self.authorized_client.post(
             reverse('posts:post_edit', kwargs={'post_id': self.post.id}),
@@ -114,7 +114,6 @@ class PostCreateFormTests(TestCase):
         )
         self.assertEqual(edit_post.text, form_data['text'])
         self.assertEqual(edit_post.group.id, form_data['group'])
-        self.assertEqual(edit_post.image, 'posts/small2.gif')
 
     def test_authorized_client_add_comment(self):
         '''Авторизованный клиент может комментировать посты автора.'''

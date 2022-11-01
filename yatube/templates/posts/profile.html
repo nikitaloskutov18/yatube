@@ -5,29 +5,28 @@
 <div class="mb-5">
     <h1>Все посты пользователя: {{ author.get_full_name }}</h1>
     <h3>Всего постов: {{ author.posts.count }}</h3>
-    <h3>Количество подписчиков: {{ followings }}</h3>
-    <h3>Подписки: {{ followers }}</h3>
+    <h3>Количество подписчиков: {{ author.following.count }}</h3>
+    <h3>Подписки: {{ user.following.count }}</h3>
     {% if user.is_authenticated and user != author %}
-    {% if following %}
-    <a
-      class="btn btn-lg btn-light"
-      href="{% url 'posts:profile_unfollow' author.username %}" role="button"
-    >
-      Отписаться
-    </a>
-  {% else %}
-    <a
-      class="btn btn-lg btn-primary"
-      href="{% url 'posts:profile_follow' author.username %}" role="button"
-    >
-      Подписаться
-    </a>
-  {% endif %}
-{% endif %}   
-    {% for post in page_obj %}
-    {% include 'includes/article.html' with detail_info_link=True group_list_link=True %}
-    {% endfor %}
+      {% if following %}
+        <a
+          class="btn btn-lg btn-light"
+          href="{% url 'posts:profile_unfollow' author.username %}" role="button"
+        >
+          Отписаться
+        </a>
+      {% else %}
+        <a
+          class="btn btn-lg btn-primary"
+          href="{% url 'posts:profile_follow' author.username %}" role="button"
+        >
+          Подписаться
+        </a>
+      {% endif %}
+    {% endif %}   
+      {% for post in page_obj %}
+        {% include 'includes/article.html' with detail_info_link=True group_list_link=True %}
+      {% endfor %}
     {% include 'posts/includes/paginator.html' %}
 </div>
-
 {% endblock %}

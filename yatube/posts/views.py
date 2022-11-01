@@ -4,9 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import cache_page
 
 from .forms import PostForm, CommentForm
-
 from .models import Post, Group, User, Follow
-
 from .util import paginator
 
 FIRST_THIRTY: int = 30
@@ -16,45 +14,45 @@ FIRST_THIRTY: int = 30
 def index(request):
     post_list = Post.objects.select_related('group')
     page_obj = paginator(post_list, request)
-    context = {
-        'page_obj': page_obj
-    }
-    return render(request, 'posts/index.html', context)
+    return render(request, 'posts/index.html', {'page_obj': page_obj})
 
 
 def group_posts(request, slug):
     group = get_object_or_404(Group, slug=slug)
     posts = Post.objects.all()
     page_obj = paginator(posts, request)
-    context = {
-        'group': group,
-        'page_obj': page_obj,
-    }
-    return render(request, 'posts/group_list.html', context)
+    return render(
+        request,
+        'posts/group_list.html', 
+        {
+            'group': group,
+            'page_obj': page_obj,
+        }
+    )
 
 
 def profile(request, username):
     author = get_object_or_404(User, username=username)
-    user = request.user
     posts = Post.objects.filter(author=author)
     page_obj = paginator(posts, request)
-    if user.is_authenticated:
-        followers = author.follower.count()
-    else:
-        followers = 'N/A'
-    followings = author.following.count()
-    following = False
-    if user.is_authenticated:
-        if Follow.objects.filter(user=user, author=author).exists():
-            following = True
-    context = {
-        'author': author,
-        'page_obj': page_obj,
-        'followers': followers,
-        'followings': followings,
-        'following': following
-    }
-    return render(request, 'posts/profile.html', context)
+    following = (request.user.is_authenticated and Follow.objects.filter(
+        user=request.user,
+        author=author).exists()
+    )
+    # context = {
+    #     'author': author,
+    #     'page_obj': page_obj,
+    #     'following': following
+    # }
+    return render(
+        request,
+        'posts/profile.html', 
+        {
+            'author': author,
+            'page_obj': page_obj,
+            'following': following
+        }
+    )
 
 
 def post_detail(request, post_id):
@@ -62,13 +60,22 @@ def post_detail(request, post_id):
     form = CommentForm()
     comments = post.comments.all()
     title = f'Пост {str(post)}'
-    context = {
-        'post': post,
-        'title': title,
-        'form': form,
-        'comments': comments
-    }
-    return render(request, 'posts/post_detail.html', context)
+    # context = {
+    #     'post': post,
+    #     'title': title,
+    #     'form': form,
+    #     'comments': comments
+    # }
+    return render(
+        request,
+        'posts/post_detail.html', 
+        {
+            'post': post,
+            'title': title,
+            'form': form,
+            'comments': comments
+        }
+    )
 
 
 @login_required
@@ -97,17 +104,25 @@ def post_edit(request, post_id):
         instance=post,
         files=request.FILES or None,
     )
-    context = {
-        'form': form,
-        'is_edit': is_edit,
-        'post': post
-    }
+    # context = {
+    #     'form': form,
+    #     'is_edit': is_edit,
+    #     'post': post
+    # }
     if form.is_valid():
         form = form.save(commit=False)
         form.author = request.user
         form.save()
         return redirect('posts:post_detail', post_id=post.pk)
-    return render(request, 'posts/post_create.html', context)
+    return render(
+        request,
+        'posts/post_create.html', 
+            {
+                'form': form, 
+                'is_edit': is_edit,
+                'post': post
+            }
+    )
 
 
 @login_required
@@ -128,10 +143,10 @@ def add_comment(request, post_id):
 def follow_index(request):
     post_list = Post.objects.filter(author__following__user=request.user)
     page_obj = paginator(post_list, request)
-    context = {
-        'page_obj': page_obj
-    }
-    return render(request, 'posts/follow.html', context)
+    # context = {
+    #     'page_obj': page_obj
+    # }
+    return render(request, 'posts/follow.html', {'page_obj': page_obj})
 
 
 @login_required
