@@ -23,7 +23,7 @@ def group_posts(request, slug):
     page_obj = paginator(posts, request)
     return render(
         request,
-        'posts/group_list.html', 
+        'posts/group_list.html',
         {
             'group': group,
             'page_obj': page_obj,
@@ -39,14 +39,9 @@ def profile(request, username):
         user=request.user,
         author=author).exists()
     )
-    # context = {
-    #     'author': author,
-    #     'page_obj': page_obj,
-    #     'following': following
-    # }
     return render(
         request,
-        'posts/profile.html', 
+        'posts/profile.html',
         {
             'author': author,
             'page_obj': page_obj,
@@ -60,15 +55,9 @@ def post_detail(request, post_id):
     form = CommentForm()
     comments = post.comments.all()
     title = f'Пост {str(post)}'
-    # context = {
-    #     'post': post,
-    #     'title': title,
-    #     'form': form,
-    #     'comments': comments
-    # }
     return render(
         request,
-        'posts/post_detail.html', 
+        'posts/post_detail.html',
         {
             'post': post,
             'title': title,
@@ -104,11 +93,6 @@ def post_edit(request, post_id):
         instance=post,
         files=request.FILES or None,
     )
-    # context = {
-    #     'form': form,
-    #     'is_edit': is_edit,
-    #     'post': post
-    # }
     if form.is_valid():
         form = form.save(commit=False)
         form.author = request.user
@@ -116,12 +100,12 @@ def post_edit(request, post_id):
         return redirect('posts:post_detail', post_id=post.pk)
     return render(
         request,
-        'posts/post_create.html', 
-            {
-                'form': form, 
-                'is_edit': is_edit,
-                'post': post
-            }
+        'posts/post_create.html',
+        {
+            'form': form,
+            'is_edit': is_edit,
+            'post': post
+        }
     )
 
 
@@ -143,9 +127,6 @@ def add_comment(request, post_id):
 def follow_index(request):
     post_list = Post.objects.filter(author__following__user=request.user)
     page_obj = paginator(post_list, request)
-    # context = {
-    #     'page_obj': page_obj
-    # }
     return render(request, 'posts/follow.html', {'page_obj': page_obj})
 
 
